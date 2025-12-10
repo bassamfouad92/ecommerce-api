@@ -1,6 +1,5 @@
 package com.bsm.ecommerce_api.ecommerce_api.controllers;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -23,10 +22,8 @@ import jakarta.validation.Valid;
 
 import com.bsm.ecommerce_api.ecommerce_api.dtos.AddItemToCartRequest;
 import com.bsm.ecommerce_api.ecommerce_api.dtos.CartDto;
-import com.bsm.ecommerce_api.ecommerce_api.dtos.CartItemDto;
 import com.bsm.ecommerce_api.ecommerce_api.dtos.UpdateProductQuantityInCartRequest;
 import com.bsm.ecommerce_api.ecommerce_api.entities.Cart;
-import com.bsm.ecommerce_api.ecommerce_api.entities.CartItem;
 import com.bsm.ecommerce_api.ecommerce_api.mappers.CartMapper;
 
 import lombok.AllArgsConstructor;
@@ -107,6 +104,18 @@ public class CartController {
                     Map.of("message", "Cart not found"));
         }
         cart.removeItem(productId);
+        cartRepository.save(cart);
+        return ResponseEntity.noContent().build();
+    }
+
+    @DeleteMapping("/{cartId}/items")
+    public ResponseEntity<?> clearCart(@PathVariable UUID cartId) {
+        var cart = cartRepository.getCartWithItems(cartId).orElse(null);
+        if (cart == null) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(
+                    Map.of("message", "Cart not found"));
+        }
+        cart.clear();
         cartRepository.save(cart);
         return ResponseEntity.noContent().build();
     }
