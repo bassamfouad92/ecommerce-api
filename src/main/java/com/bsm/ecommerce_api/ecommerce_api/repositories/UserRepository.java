@@ -1,7 +1,11 @@
 package com.bsm.ecommerce_api.ecommerce_api.repositories;
+
+import java.util.Optional;
 import org.springframework.data.jpa.repository.JpaRepository;
 import com.bsm.ecommerce_api.ecommerce_api.entities.User;
 
 public interface UserRepository extends JpaRepository<User, Long> {
     boolean existsByEmail(String email);
+
+    Optional<User> findByEmail(String email);
 }
